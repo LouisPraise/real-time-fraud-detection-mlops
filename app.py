@@ -1,7 +1,10 @@
 import streamlit as st
-import requests
+import joblib
+import numpy as np
 
 st.set_page_config(page_title="Fraud Detection", page_icon="🔍")
+
+model = joblib.load("My_Fd_Model.pkl")
 
 st.title("🔍 Real-Time Fraud Detection")
 st.markdown("Enter transaction details to analyze fraud risk.")
@@ -25,26 +28,21 @@ with col2:
     v9 = st.number_input("V9", value=0.36)
 
 if st.button("🔍 Analyze Transaction"):
-    transaction = {
-        "V1": v1, "V2": v2, "V3": v3, "V4": v4, "V5": v5,
-        "V6": v6, "V7": v7, "V8": v8, "V9": v9,
-        "V10": 0.09, "V11": -0.55, "V12": -0.61,
-        "V13": -0.99, "V14": -0.31, "V15": 1.46,
-        "V16": -0.47, "V17": 0.20, "V18": 0.02,
-        "V19": 0.40, "V20": 0.25, "V21": -0.01,
-        "V22": 0.27, "V23": -0.11, "V24": 0.06,
-        "V25": 0.12, "V26": -0.18, "V27": 0.13,
-        "V28": -0.02, "Amount_scaled": amount,
-        "Time_scaled": -1.99
-    }
+    features = np.array([[
+        v1, v2, v3, v4, v5, v6, v7, v8, v9,
+        0.09, -0.55, -0.61, -0.99, -0.31, 1.46,
+        -0.47, 0.20, 0.02, 0.40, 0.25, -0.01,
+        0.27, -0.11, 0.06, 0.12, -0.18, 0.13,
+        -0.02, amount, -1.99
+    ]])
 
-    response = requests.post("http://127.0.0.1:8000/predict", json=transaction)
-    result = response.json()
+    prediction = model.predict(features)[0]
+    probability = model.predict_proba(features)[0][1]
 
     st.markdown("---")
-    if result["fraud"]:
-        st.error(f"🚨 FRAUD DETECTED — Probability: {result['probability']*100:.1f}%")
+    if prediction == 1:
+        st.error(f"🚨 FRAUD DETECTED — Probability: {probability*100:.1f}%")
     else:
-        st.success(f"✅ NORMAL TRANSACTION — Fraud probability: {result['probability']*100:.1f}%")
+        st.success(f"✅ NORMAL TRANSACTION — Fraud probability: {probability*100:.1f}%")
 
-    st.metric("Fraud Probability", f"{result['probability']*100:.1f}%")
+    st.metric("Fraud Probability", f"{probability*100:.1f}%")
