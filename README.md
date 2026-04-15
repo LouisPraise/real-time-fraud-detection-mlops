@@ -38,10 +38,16 @@ We prioritize **Recall** because missing a single fraud is significantly more ex
 | **F1-Score** | 0.80 |
 | **AUC-ROC** | 0.97 |
 
+### 🚀 API Documentation
+Once the server is running, access the interactive documentation:
+🔗 **Swagger UI:** [http://127.0.0](http://127.0.0)  
+🔗 **Direct Prediction Link:** [POST /predict](http://127.0.0#/default/predict_predict_post)
+
 ### ⚙️ Installation & Deployment
 
 1. **Clone & Setup**
    ```bash
-   git clone https://github.com
+   git clone https://github.com/LouisPraise/real-time-fraud-detection-mlops.git
    cd real-time-fraud-detection-mlops
    pip install -r requirements.txt
+
